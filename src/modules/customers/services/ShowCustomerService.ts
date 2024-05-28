@@ -11,13 +11,13 @@ class ShowCustomerService {
   public async execute({ id }: IRequest): Promise<Customer> {
     const customersRepository = getCustomRepository(CustomersRepository);
 
-    const user = await customersRepository.findById(id);
+    const customer = await customersRepository.findById(id);
 
-    if (!user) {
+    if (!customer) {
       throw new AppError("User not found");
     }
 
-    return user;
+    return customer;
   }
 }
 
