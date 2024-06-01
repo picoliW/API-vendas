@@ -1,7 +1,9 @@
-import Product from "@modules/products/typeorm/entities/Product";
-import { ProductRepository } from "@modules/products/typeorm/repositories/ProductsRepositorie";
+import Product from "@modules/products/infra/typeorm/entities/Product";
+import { ProductRepository } from "@modules/products/infra/typeorm/repositories/ProductsRepositorie";
 import AppError from "@shared/errors/AppError";
-import { getCustomRepository } from "typeorm";
+import { inject, injectable } from "tsyringe";
+import { getRepository } from "typeorm";
+import { IProductRepository } from "../domain/repositories/IProductRepository";
 
 interface IRequest {
   name: string;
@@ -9,22 +11,26 @@ interface IRequest {
   quantity: number;
 }
 
+@injectable()
 class CreateProductService {
+  constructor(
+    @inject("ProductRepository")
+    private productsRepository: IProductRepository,
+  ) {}
   public async execute({ name, price, quantity }: IRequest): Promise<Product> {
-    const productsRepository = getCustomRepository(ProductRepository);
-    const productExists = await productsRepository.findByName(name);
+    const productExists = await this.productsRepository.findByName(name);
 
     if (productExists) {
       throw new AppError("There is already one product with this name");
     }
 
-    const product = productsRepository.create({
+    const product = await this.productsRepository.create({
       name,
       price,
       quantity,
     });
 
-    await productsRepository.save(product);
+    await this.productsRepository.save(product);
 
     return product;
   }

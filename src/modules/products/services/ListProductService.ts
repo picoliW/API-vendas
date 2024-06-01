@@ -1,5 +1,5 @@
-import Product from "@modules/products/typeorm/entities/Product";
-import { ProductRepository } from "@modules/products/typeorm/repositories/ProductsRepositorie";
+import Product from "@modules/products/infra/typeorm/entities/Product";
+import { ProductRepository } from "@modules/products/infra/typeorm/repositories/ProductsRepositorie";
 import { getCustomRepository } from "typeorm";
 
 class ListProductService {

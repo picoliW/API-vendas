@@ -1,26 +1,33 @@
 import AppError from "@shared/errors/AppError";
 import { getCustomRepository } from "typeorm";
 import path from "path";
-import UsersRepository from "../typeorm/repositories/UsersRepository";
-import UsersTokensRepository from "../typeorm/repositories/UserTokensRepository";
+import UsersRepository from "../infra/typeorm/repositories/UsersRepository";
+import UsersTokensRepository from "../infra/typeorm/repositories/UserTokensRepository";
 import EtherealMail from "@config/mail/EtherealMail";
+import { inject, injectable } from "tsyringe";
 
 interface IRequest {
   email: string;
 }
 
+@injectable()
 class SendForgotPasswordEmailService {
-  public async execute({ email }: IRequest): Promise<void> {
-    const usersRepository = getCustomRepository(UsersRepository);
-    const userTokensRepository = getCustomRepository(UsersTokensRepository);
+  constructor(
+    @inject("UsersRepository")
+    private usersRepository: UsersRepository,
 
-    const user = await usersRepository.findByEmail(email);
+    @inject("UsersTokenRepository")
+    private usersTokensRepository: UsersTokensRepository,
+  ) {}
+
+  public async execute({ email }: IRequest): Promise<void> {
+    const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
       throw new AppError("User not found");
     }
 
-    const { token } = await userTokensRepository.generate(user.id);
+    const { token } = await this.usersTokensRepository.generate(user.id);
 
     const forgotPasswordTemplate = path.resolve(
       __dirname,
