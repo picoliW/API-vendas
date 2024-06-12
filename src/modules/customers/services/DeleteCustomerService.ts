@@ -1,6 +1,6 @@
 import { inject, injectable } from "tsyringe";
 import AppError from "@shared/errors/AppError";
-import CustomersRepository from "../infra/typeorm/repositories/CustomersRepository";
+import { ICustomersRepository } from "../domain/repositories/ICustomerRepository";
 
 interface IRequest {
   id: string;
@@ -10,7 +10,7 @@ interface IRequest {
 class DeleteCustomerService {
   constructor(
     @inject("CustomersRepository")
-    private customersRepository: CustomersRepository,
+    private customersRepository: ICustomersRepository,
   ) {}
 
   public async execute({ id }: IRequest): Promise<void> {

@@ -1,10 +1,9 @@
 import AppError from "@shared/errors/AppError";
-
 import { hash } from "bcryptjs";
 import { isAfter, addHours } from "date-fns";
-import UsersRepository from "../infra/typeorm/repositories/UsersRepository";
-import UsersTokensRepository from "../infra/typeorm/repositories/UserTokensRepository";
 import { inject, injectable } from "tsyringe";
+import { IUsersRepository } from "../domain/repositories/IUsersRepository";
+import { IUsersTokensRepository } from "../domain/repositories/IUsersTokenRepository";
 
 interface IRequest {
   token: string;
@@ -15,10 +14,10 @@ interface IRequest {
 class ResetPasswordService {
   constructor(
     @inject("UsersRepository")
-    private usersRepository: UsersRepository,
+    private usersRepository: IUsersRepository,
 
     @inject("UsersTokenRepository")
-    private usersTokensRepository: UsersTokensRepository,
+    private usersTokensRepository: IUsersTokensRepository,
   ) {}
   public async execute({ token, password }: IRequest): Promise<void> {
     const userToken = await this.usersTokensRepository.findByToken(token);

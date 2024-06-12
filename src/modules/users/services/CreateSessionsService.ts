@@ -1,11 +1,10 @@
 import AppError from "@shared/errors/AppError";
-import { getCustomRepository } from "typeorm";
 import User from "../infra/typeorm/entities/User";
-import UsersRepository from "../infra/typeorm/repositories/UsersRepository";
-import { compare } from "bcryptjs";
 import { Secret, sign } from "jsonwebtoken";
 import authConfig from "@config/auth";
 import { inject, injectable } from "tsyringe";
+import { IUsersRepository } from "../domain/repositories/IUsersRepository";
+import { IHashProvider } from "../providers/HashProvider/models/IHashProvider";
 
 interface IRequest {
   email: string;
@@ -21,7 +20,10 @@ interface IResponse {
 class CreateSessionsService {
   constructor(
     @inject("UsersRepository")
-    private usersRepository: UsersRepository,
+    private usersRepository: IUsersRepository,
+
+    @inject("HashProvider")
+    private hashProvider: IHashProvider,
   ) {}
   public async execute({ email, password }: IRequest): Promise<IResponse> {
     const user = await this.usersRepository.findByEmail(email);
@@ -30,7 +32,10 @@ class CreateSessionsService {
       throw new AppError("Incorrect email/password.", 401);
     }
 
-    const passwordConfirmed = await compare(password, user.password);
+    const passwordConfirmed = await this.hashProvider.compareHash(
+      password,
+      user.password,
+    );
 
     if (!passwordConfirmed) {
       throw new AppError("Incorrect email/password.", 401);

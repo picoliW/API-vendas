@@ -8,4 +8,7 @@ export interface IProductRepository {
   save(product: Product): Promise<Product>;
   updateQuantity(products: { id: string; quantity: number }[]): Promise<void>;
   create({ name, price, quantity }: ICreateProduct): Promise<Product>;
+  findOne(id: string): Promise<Product | undefined>;
+  remove(product: Product): Promise<void>;
+  find(): Promise<Product[]>;
 }

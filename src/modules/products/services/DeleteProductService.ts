@@ -1,6 +1,6 @@
-import { ProductRepository } from "@modules/products/infra/typeorm/repositories/ProductsRepositorie";
 import AppError from "@shared/errors/AppError";
 import { inject, injectable } from "tsyringe";
+import { IProductRepository } from "../domain/repositories/IProductRepository";
 
 interface IRequest {
   id: string;
@@ -10,7 +10,7 @@ interface IRequest {
 class DeleteProductService {
   constructor(
     @inject("ProductRepository")
-    private productsRepository: ProductRepository,
+    private productsRepository: IProductRepository,
   ) {}
   public async execute({ id }: IRequest): Promise<void> {
     const product = await this.productsRepository.findOne(id);

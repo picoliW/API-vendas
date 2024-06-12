@@ -5,6 +5,8 @@ import UsersRepository from "../infra/typeorm/repositories/UsersRepository";
 import UsersTokensRepository from "../infra/typeorm/repositories/UserTokensRepository";
 import EtherealMail from "@config/mail/EtherealMail";
 import { inject, injectable } from "tsyringe";
+import { IUsersRepository } from "../domain/repositories/IUsersRepository";
+import { IUsersTokensRepository } from "../domain/repositories/IUsersTokenRepository";
 
 interface IRequest {
   email: string;
@@ -14,10 +16,10 @@ interface IRequest {
 class SendForgotPasswordEmailService {
   constructor(
     @inject("UsersRepository")
-    private usersRepository: UsersRepository,
+    private usersRepository: IUsersRepository,
 
     @inject("UsersTokenRepository")
-    private usersTokensRepository: UsersTokensRepository,
+    private usersTokensRepository: IUsersTokensRepository,
   ) {}
 
   public async execute({ email }: IRequest): Promise<void> {

@@ -2,9 +2,10 @@ import { Router } from "express";
 
 import { celebrate, Joi, Segments } from "celebrate";
 import ProductsController from "../controllers/ProductsController";
+import { container } from "tsyringe";
 
 const productsRouter = Router();
-const productsController = new ProductsController();
+const productsController = container.resolve(ProductsController);
 
 productsRouter.get("/", productsController.index);
 
